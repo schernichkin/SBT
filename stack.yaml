@@ -1,0 +1,4 @@
+packages:
+- hive-ddl
+
+resolver: lts-5.1
