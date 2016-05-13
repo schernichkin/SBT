@@ -1,4 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
+
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Commands
   ( CreateTables (..)
@@ -6,20 +8,24 @@ module Commands
   , createTables
   ) where
 
-import Data.Text
-import GHC.Generics
+import           Commands.CreateTableFromCSV
+import           Control.Monad
+import           Data.Default
+import           SQL.Syntax
 
 data CreateTables = CreateTables
-  { _createTablesSource :: CreateTablesSource
+  { _createTablesSource   :: !CreateTablesSource
+  , _defaultStoreLocation :: !(Maybe String)
   } deriving ( Show )
 
 data CreateTablesSource = FromCSV FilePath deriving ( Show )
 
-data ColumnInfo = ColumnInfo
-  { _table :: !Text
-  , _column :: !Text
-  , _type :: !Text
-  } deriving ( Show, Generic )
-
 createTables ::  CreateTables -> IO ()
-createTables = print
+createTables CreateTables {..} = case _createTablesSource of
+   FromCSV path -> do
+     tableDefs <- readTableDefs path
+     forM_ tableDefs $ \tableDef -> do
+       -- let fixed = case  of 
+       case runStringPrinter createTable tableDef of
+         Right a -> putStrLn a
+         Left  e -> putStrLn $ (show e) ++ ": " ++ (show tableDef)

@@ -1,4 +1,8 @@
 packages:
 - sql-tool
+- location:
+    git: https://github.com/schernichkin/haskell-invertible-syntax-poly.git
+    commit: bf566f496f9b538a63c7be074b5e270f3d0a8ae3
+  extra-dep: true
 
 resolver: lts-5.1
