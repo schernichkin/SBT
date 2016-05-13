@@ -1,6 +1,6 @@
-name:                hive-ddl
+name:                sql-tool
 version:             0.1.0.0
-synopsis:            DDL script generator
+synopsis:            SQL script generator
 description:         Please see README.md
 homepage:            https://github.com/schernichkin/SBT/hive-ddl#readme
 license:             BSD3
@@ -12,13 +12,17 @@ category:            Database
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable hive-ddl
+executable sql-tool
   hs-source-dirs:      src
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
+                     , cassava
                      , optparse-applicative
+                     , text
   default-language:    Haskell2010
+  other-modules:       Args
+                     , Commands
 
 source-repository head
   type:     git

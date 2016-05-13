@@ -1,4 +1,4 @@
 packages:
-- hive-ddl
+- sql-tool
 
 resolver: lts-5.1
