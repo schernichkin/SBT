@@ -2,7 +2,7 @@ name:                sql-tool
 version:             0.1.0.0
 synopsis:            SQL script generator
 description:         Please see README.md
-homepage:            https://github.com/schernichkin/SBT/hive-ddl#readme
+homepage:            https://github.com/schernichkin/SBT/README.md
 license:             BSD3
 license-file:        LICENSE
 author:              Stanislav Chernichkin

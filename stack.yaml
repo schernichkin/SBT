@@ -1,4 +1,5 @@
 packages:
+- csv-converter
 - sql-tool
 - location:
     git: https://github.com/schernichkin/haskell-invertible-syntax-poly.git
