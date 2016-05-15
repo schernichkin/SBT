@@ -1,4 +1,3 @@
-{-# LANGUAGE Rank2Types      #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module CSVConverter.FancyCSV
@@ -11,12 +10,13 @@ import           Data.Binary.Get
 import           Pipes
 import           Pipes.Binary
 import           Pipes.ByteString
+import           Pipes.Parse                (isEndOfInput, parsed)
 import           System.IO
 import           System.TimeIt
 
 data ToCSVArgs = ToCSVArgs
-  { _toCSVInput  :: FilePath
-  , _toCSVOutput :: FilePath
+  { _toCSVInput  :: !FilePath
+  , _toCSVOutput :: !FilePath
   } deriving ( Show )
 
 {-# INLINE fancyGet #-}
@@ -27,16 +27,12 @@ fancyGet = do
   getByteString (fromIntegral len - 2)
 
 {-# INLINE fancyProducer #-}
-fancyProducer :: (MonadIO m) => Handle -> Producer' ByteString m ()
-fancyProducer = go . fromHandle
-  where
-    go producer = do
-      (result, remains) <- runStateT (decodeGet fancyGet) producer
-      case result of
-        Right row -> do
-          yield row
-          go remains
-        Left err -> liftIO $ putStrLn $ deMessage err
+fancyProducer :: Handle -> Producer ByteString IO ()
+fancyProducer h = do
+  (DecodingError consumed msg, remains) <- parsed (decodeGet fancyGet) (fromHandle h)
+  when (consumed /= 0) $ fail msg
+  eof <- lift $ evalStateT isEndOfInput remains
+  unless eof $ fail msg
 
 toCSV :: ToCSVArgs -> IO ()
 toCSV ToCSVArgs {..} = do
