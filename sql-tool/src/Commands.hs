@@ -20,7 +20,6 @@ import           System.FilePath
 
 data CreateTables = CreateTables
   { _createTablesSource   :: !CreateTablesSource
-  , _path
   , _defaultStoreLocation :: !(Maybe String)
   } deriving ( Show )
 
