@@ -14,8 +14,13 @@ createTablesSourceParser :: Parser CreateTablesSource
 createTablesSourceParser = FromCSV
   <$> option str  ( short 'c' <> long "from-columns" <> metavar "FILE" )
 
+defaultLocationParser :: Parser String
+defaultLocationParser = option str ( short 'l' <> long "default-location" <> metavar "FILE" )
+
 createTablesParser :: Parser CreateTables
-createTablesParser = CreateTables <$> createTablesSourceParser
+createTablesParser = CreateTables
+                  <$> createTablesSourceParser
+                  <*> optional defaultLocationParser
 
 argsParserInfo :: ParserInfo (IO ())
 argsParserInfo = withHelper $ subparser

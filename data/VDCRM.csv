@@ -1,4 +1,4 @@
-table-name,column-name,data-type
+TableName,ColumnName,DataType
 access_rights,access_rights_id,VARCHAR(20)
 access_rights,essence,VARCHAR(255)
 access_rights,join_segment,INTEGER

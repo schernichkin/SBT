@@ -1,4 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
+
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Commands
   ( CreateTables (..)
@@ -6,20 +8,33 @@ module Commands
   , createTables
   ) where
 
-import Data.Text
-import GHC.Generics
+import           Commands.CreateTableFromCSV
+import           Control.Lens
+import           Control.Monad
+import           Control.Monad.State
+import           Data.Maybe
+import qualified Data.Text                   as T
+import           SQL.Syntax
+import           SQL.Syntax.Lens
+import           System.FilePath
 
 data CreateTables = CreateTables
-  { _createTablesSource :: CreateTablesSource
+  { _createTablesSource   :: !CreateTablesSource
+  , _path
+  , _defaultStoreLocation :: !(Maybe String)
   } deriving ( Show )
 
 data CreateTablesSource = FromCSV FilePath deriving ( Show )
 
-data ColumnInfo = ColumnInfo
-  { _table :: !Text
-  , _column :: !Text
-  , _type :: !Text
-  } deriving ( Show, Generic )
-
 createTables ::  CreateTables -> IO ()
-createTables = print
+createTables CreateTables {..} = case _createTablesSource of
+   FromCSV path -> do
+     tableDefs <- readTableDefs path
+     forM_ tableDefs $ \tableDef -> do
+       let fixedDef = flip execState tableDef $ do
+            name <- T.unpack <$> use tableName
+            let defaultLocation = T.pack $ fromMaybe "" _defaultStoreLocation </> name
+            tableStore . _Just . storeLocation %= flip mplus (Just defaultLocation)
+       case runStringPrinter createTable fixedDef of
+         Right a -> putStrLn a
+         Left  e -> putStrLn $ show e ++ ": " ++ show tableDef
