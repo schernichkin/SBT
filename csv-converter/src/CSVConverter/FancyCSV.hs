@@ -35,9 +35,7 @@ fancyProducer h = do
   unless eof $ fail msg
 
 toCSV :: ToCSVArgs -> IO ()
-toCSV ToCSVArgs {..} = do
-  (elapsed, _) <- timeItT $
-    withBinaryFile _toCSVInput  ReadMode  $ \input ->
-    withBinaryFile _toCSVOutput WriteMode $ \output ->
-      runEffect $ fancyProducer input >-> toHandle output
-  putStrLn $ "total time:" ++ show elapsed
+toCSV ToCSVArgs {..} = timeIt $
+  withBinaryFile _toCSVInput  ReadMode  $ \input ->
+  withBinaryFile _toCSVOutput WriteMode $ \output ->
+    runEffect $ fancyProducer input >-> toHandle output
