@@ -31,7 +31,7 @@ library
 executable csv-converter
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -O2 -rtsopts -with-rtsopts=-qs
+  ghc-options:         -Wall -O2 -rtsopts
   build-depends:       base
                      , csv-converter
   default-language:    Haskell2010
